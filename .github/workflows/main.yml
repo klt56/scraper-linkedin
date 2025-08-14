@@ -11,6 +11,7 @@ jobs:
     defaults:
       run:
         shell: pwsh
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,7 +40,18 @@ jobs:
           $env:PLAYWRIGHT_BROWSERS_PATH = "$(Resolve-Path .)\ms-playwright"
           python -m playwright install chromium
 
-      - name: Build with PyInstaller (onedir)
+      - name: List files (debug)
         run: |
-          pyinstaller --noconsole --onedir `
-            --name Scr
+          pwd
+          dir
+
+      - name: Build with PyInstaller (onedir)
+        run: pyinstaller --noconsole --onedir --name ScraperStartpage --add-data "ms-playwright;ms-playwright" gui_scraper.py
+
+      - name: Upload artifact (EXE folder)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ScraperStartpage-win
+          path: dist/ScraperStartpage
+          compression-level: 6
+
