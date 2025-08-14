@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environnements / IDE
+.venv/
+env/
+.venv*/
+.vscode/
+.idea/
+
+# Build PyInstaller
+build/
+dist/
+*.spec
+
+# Playwright browsers (toujours installés au build CI, pas dans le repo)
+ms-playwright/
+
+# Autres
+.DS_Store
+*.log
