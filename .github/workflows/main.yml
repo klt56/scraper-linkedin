@@ -1,0 +1,45 @@
+name: Build Windows EXE (PyInstaller + Playwright)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Python deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Cache Playwright browsers
+        id: cache-browsers
+        uses: actions/cache@v4
+        with:
+          path: ms-playwright
+          key: ms-playwright-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
+
+      - name: Install Playwright Chromium (local to repo)
+        if: steps.cache-browsers.outputs.cache-hit != 'true'
+        run: |
+          $env:PLAYWRIGHT_BROWSERS_PATH = "$(Resolve-Path .)\ms-playwright"
+          python -m playwright install chromium
+
+      - name: Build with PyInstaller (onedir)
+        run: |
+          pyinstaller --noconsole --onedir `
+            --name Scr
